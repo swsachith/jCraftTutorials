@@ -11,13 +11,21 @@ import java.util.Map;
 
 public class HadoopConfiguration
         extends javax.security.auth.login.Configuration {
-    private static final Map<String, String> BASIC_JAAS_OPTIONS =
+    private Map<String, String> BASIC_JAAS_OPTIONS =
             new HashMap<String, String>();
 
-    private static final Map<String, String> USER_KERBEROS_OPTIONS =
+    private Map<String, String> USER_KERBEROS_OPTIONS =
             new HashMap<String, String>();
 
-    static {
+    private String ticketCache;
+    public HadoopConfiguration(String ticketCache) {
+        this.ticketCache = ticketCache;
+        System.out.println("TicketCache: "+ticketCache);
+        init();
+    }
+
+    private void init()
+     {
         if (false) {
             USER_KERBEROS_OPTIONS.put("useDefaultCache", "true");
         } else {
@@ -25,33 +33,19 @@ public class HadoopConfiguration
             USER_KERBEROS_OPTIONS.put("useTicketCache", "true");
             USER_KERBEROS_OPTIONS.put("debug", "true");
         }
-        String ticketCache = "/Users/swithana/krb5cc_apache_swithana";
+//        String ticketCache = "/Users/swithana/krb5cc_apache_swithana";
 //        String ticketCache = System.getenv("KRB5CCNAME");
         USER_KERBEROS_OPTIONS.put("ticketCache", ticketCache);
         USER_KERBEROS_OPTIONS.put("renewTGT", "true");
 //        USER_KERBEROS_OPTIONS.putAll(BASIC_JAAS_OPTIONS);
     }
 
-    private static final AppConfigurationEntry USER_KERBEROS_LOGIN =
+    private AppConfigurationEntry USER_KERBEROS_LOGIN =
             new AppConfigurationEntry("com.sun.security.auth.module.Krb5LoginModule",
                     AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
                     USER_KERBEROS_OPTIONS);
-    private static final Map<String, String> KEYTAB_KERBEROS_OPTIONS =
-            new HashMap<String, String>();
 
-    static {
-        if (false) {
-            KEYTAB_KERBEROS_OPTIONS.put("credsType", "both");
-        } else {
-            KEYTAB_KERBEROS_OPTIONS.put("doNotPrompt", "true");
-            KEYTAB_KERBEROS_OPTIONS.put("useKeyTab", "true");
-            KEYTAB_KERBEROS_OPTIONS.put("storeKey", "true");
-        }
-        KEYTAB_KERBEROS_OPTIONS.put("refreshKrb5Config", "true");
-        KEYTAB_KERBEROS_OPTIONS.putAll(BASIC_JAAS_OPTIONS);
-    }
-
-    private static final AppConfigurationEntry[] SIMPLE_CONF =
+    private AppConfigurationEntry[] SIMPLE_CONF =
             new AppConfigurationEntry[]{USER_KERBEROS_LOGIN};
 
     @Override
